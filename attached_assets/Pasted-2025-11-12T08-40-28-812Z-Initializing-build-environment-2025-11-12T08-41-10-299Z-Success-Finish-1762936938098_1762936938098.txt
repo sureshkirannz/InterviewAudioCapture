@@ -1,0 +1,64 @@
+2025-11-12T08:40:28.812Z	Initializing build environment...
+2025-11-12T08:41:10.299Z	Success: Finished initializing build environment
+2025-11-12T08:41:10.595Z	Cloning repository...
+2025-11-12T08:41:11.468Z	Detected the following tools from environment: npm@10.9.2, nodejs@22.16.0
+2025-11-12T08:41:11.470Z	Restoring from dependencies cache
+2025-11-12T08:41:11.472Z	Restoring from build output cache
+2025-11-12T08:41:11.710Z	Installing project dependencies: npm clean-install --progress=false
+2025-11-12T08:41:18.126Z	npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+2025-11-12T08:41:18.140Z	npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+2025-11-12T08:41:22.110Z	
+2025-11-12T08:41:22.110Z	added 478 packages, and audited 479 packages in 10s
+2025-11-12T08:41:22.110Z	
+2025-11-12T08:41:22.111Z	64 packages are looking for funding
+2025-11-12T08:41:22.111Z	  run `npm fund` for details
+2025-11-12T08:41:22.127Z	
+2025-11-12T08:41:22.127Z	8 vulnerabilities (3 low, 5 moderate)
+2025-11-12T08:41:22.127Z	
+2025-11-12T08:41:22.127Z	To address issues that do not require attention, run:
+2025-11-12T08:41:22.127Z	  npm audit fix
+2025-11-12T08:41:22.128Z	
+2025-11-12T08:41:22.128Z	To address all issues (including breaking changes), run:
+2025-11-12T08:41:22.128Z	  npm audit fix --force
+2025-11-12T08:41:22.128Z	
+2025-11-12T08:41:22.128Z	Run `npm audit` for details.
+2025-11-12T08:41:22.283Z	Executing user build command: npm run build
+2025-11-12T08:41:22.508Z	
+2025-11-12T08:41:22.508Z	> rest-express@1.0.0 build
+2025-11-12T08:41:22.508Z	> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+2025-11-12T08:41:22.508Z	
+2025-11-12T08:41:22.705Z	vite v5.4.20 building for production...
+2025-11-12T08:41:22.757Z	transforming...
+2025-11-12T08:41:27.927Z	
+2025-11-12T08:41:27.928Z	A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+2025-11-12T08:41:30.106Z	✓ 1717 modules transformed.
+2025-11-12T08:41:30.346Z	rendering chunks...
+2025-11-12T08:41:30.356Z	computing gzip size...
+2025-11-12T08:41:30.106Z	✓ 1717 modules transformed.
+2025-11-12T08:41:30.346Z	rendering chunks...
+2025-11-12T08:41:30.356Z	computing gzip size...
+2025-11-12T08:41:44.069Z	../dist/public/index.html                   0.94 kB │ gzip:   0.50 kB
+2025-11-12T08:41:44.070Z	../dist/public/assets/index-Dih3bo2M.css   69.52 kB │ gzip:  11.28 kB
+2025-11-12T08:41:44.071Z	../dist/public/assets/index-Bqos7blX.js   366.29 kB │ gzip: 114.04 kB
+2025-11-12T08:41:44.071Z	✓ built in 21.34s
+2025-11-12T08:41:44.122Z	
+2025-11-12T08:41:44.122Z	  dist/index.js  4.7kb
+2025-11-12T08:41:44.122Z	
+2025-11-12T08:41:44.125Z	⚡ Done in 5ms
+2025-11-12T08:41:44.130Z	Success: Build command completed
+2025-11-12T08:41:44.223Z	Executing user deploy command: npx wrangler deploy
+2025-11-12T08:41:45.212Z	npm warn exec The following package was not found and will be installed: wrangler@4.47.0
+2025-11-12T08:41:59.146Z	
+2025-11-12T08:41:59.147Z	 ⛅️ wrangler 4.47.0
+2025-11-12T08:41:59.147Z	───────────────────
+2025-11-12T08:41:59.147Z	
+2025-11-12T08:41:59.231Z	✘ [ERROR] Processing wrangler.toml configuration:
+2025-11-12T08:41:59.232Z	
+2025-11-12T08:41:59.232Z	    - Removed: "node_compat":
+2025-11-12T08:41:59.232Z	      The "node_compat" field is no longer supported as of Wrangler v4. Instead, use the `nodejs_compat` compatibility flag. This includes the functionality from legacy `node_compat` polyfills and natively implemented Node.js APIs. See https://developers.cloudflare.com/workers/runtime-apis/nodejs for more information.
+2025-11-12T08:41:59.232Z	
+2025-11-12T08:41:59.232Z	
+2025-11-12T08:41:59.251Z	
+2025-11-12T08:41:59.251Z	Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
+2025-11-12T08:41:59.266Z	🪵  Logs were written to "/opt/buildhome/.config/.wrangler/logs/wrangler-2025-11-12_08-41-58_372.log"
+2025-11-12T08:41:59.419Z	Failed: error occurred while running deploy command

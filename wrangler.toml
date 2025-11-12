@@ -2,7 +2,6 @@ name = "interview-assistant"
 main = "server/cloudflare.ts"
 compatibility_date = "2025-11-12"
 compatibility_flags = ["nodejs_compat"]
-node_compat = true
 
 [site]
 bucket = "./dist/public"
