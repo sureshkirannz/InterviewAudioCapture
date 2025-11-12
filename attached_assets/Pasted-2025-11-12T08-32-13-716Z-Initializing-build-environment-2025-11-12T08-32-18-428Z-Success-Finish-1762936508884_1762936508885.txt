@@ -1,0 +1,87 @@
+2025-11-12T08:32:13.716Z	Initializing build environment...
+2025-11-12T08:32:18.428Z	Success: Finished initializing build environment
+2025-11-12T08:32:18.852Z	Cloning repository...
+2025-11-12T08:32:20.104Z	Restoring from dependencies cache
+2025-11-12T08:32:20.106Z	Restoring from build output cache
+2025-11-12T08:32:20.110Z	Detected the following tools from environment: npm@10.9.2, nodejs@22.16.0
+2025-11-12T08:32:20.483Z	Installing project dependencies: npm clean-install --progress=false
+2025-11-12T08:32:24.761Z	npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+2025-11-12T08:32:24.787Z	npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+2025-11-12T08:32:29.284Z	
+2025-11-12T08:32:29.285Z	added 478 packages, and audited 479 packages in 8s
+2025-11-12T08:32:29.285Z	
+2025-11-12T08:32:29.285Z	64 packages are looking for funding
+2025-11-12T08:32:29.285Z	  run `npm fund` for details
+2025-11-12T08:32:29.309Z	
+2025-11-12T08:32:29.309Z	8 vulnerabilities (3 low, 5 moderate)
+2025-11-12T08:32:29.309Z	
+2025-11-12T08:32:29.309Z	To address issues that do not require attention, run:
+2025-11-12T08:32:29.309Z	  npm audit fix
+2025-11-12T08:32:29.309Z	
+2025-11-12T08:32:29.309Z	To address all issues (including breaking changes), run:
+2025-11-12T08:32:29.309Z	  npm audit fix --force
+2025-11-12T08:32:29.309Z	
+2025-11-12T08:32:29.309Z	Run `npm audit` for details.
+2025-11-12T08:32:29.586Z	Executing user build command: npm run build
+2025-11-12T08:32:29.932Z	
+2025-11-12T08:32:29.932Z	> rest-express@1.0.0 build
+2025-11-12T08:32:29.932Z	> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+2025-11-12T08:32:29.932Z	
+2025-11-12T08:32:30.170Z	vite v5.4.20 building for production...
+2025-11-12T08:32:30.228Z	transforming...
+2025-11-12T08:32:31.197Z	
+2025-11-12T08:32:31.198Z	A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+2025-11-12T08:32:34.380Z	✓ 1717 modules transformed.
+2025-11-12T08:32:34.586Z	rendering chunks...
+2025-11-12T08:32:34.594Z	computing gzip size...
+2025-11-12T08:32:38.759Z	../dist/public/index.html                   0.94 kB │ gzip:   0.50 kB
+2025-11-12T08:32:38.759Z	../dist/public/assets/index-Dih3bo2M.css   69.52 kB │ gzip:  11.28 kB
+2025-11-12T08:32:38.759Z	../dist/public/assets/index-Bqos7blX.js   366.29 kB │ gzip: 114.04 kB
+2025-11-12T08:32:38.759Z	✓ built in 8.57s
+2025-11-12T08:32:38.862Z	
+2025-11-12T08:32:38.862Z	  dist/index.js  4.7kb
+2025-11-12T08:32:38.863Z	
+2025-11-12T08:32:38.863Z	⚡ Done in 6ms
+2025-11-12T08:32:38.879Z	Success: Build command completed
+2025-11-12T08:32:39.120Z	Executing user deploy command: npx wrangler deploy
+2025-11-12T08:32:40.064Z	npm warn exec The following package was not found and will be installed: wrangler@4.47.0
+2025-11-12T08:32:50.163Z	
+2025-11-12T08:32:50.168Z	 ⛅️ wrangler 4.47.0
+2025-11-12T08:32:50.168Z	───────────────────
+2025-11-12T08:32:50.178Z	
+2025-11-12T08:32:50.251Z	✘ [ERROR] Missing entry-point to Worker script or to assets directory
+2025-11-12T08:32:50.251Z	
+2025-11-12T08:32:50.251Z	  
+2025-11-12T08:32:50.251Z	  If there is code to deploy, you can either:
+2025-11-12T08:32:50.251Z	  - Specify an entry-point to your Worker script via the command line (ex: `npx wrangler deploy src/index.ts`)
+2025-11-12T08:32:50.251Z	  - Or create a "wrangler.jsonc" file containing:
+2025-11-12T08:32:50.251Z	  
+2025-11-12T08:32:50.251Z	  ```
+2025-11-12T08:32:50.252Z	  {
+2025-11-12T08:32:50.252Z	    "name": "worker-name",
+2025-11-12T08:32:50.252Z	    "compatibility_date": "2025-11-12",
+2025-11-12T08:32:50.252Z	    "main": "src/index.ts"
+2025-11-12T08:32:50.252Z	  }
+2025-11-12T08:32:50.252Z	  ```
+2025-11-12T08:32:50.252Z	  
+2025-11-12T08:32:50.252Z	  
+2025-11-12T08:32:50.252Z	  If are uploading a directory of assets, you can either:
+2025-11-12T08:32:50.252Z	  - Specify the path to the directory of assets via the command line: (ex: `npx wrangler deploy --assets=./dist`)
+2025-11-12T08:32:50.252Z	  - Or create a "wrangler.jsonc" file containing:
+2025-11-12T08:32:50.253Z	  
+2025-11-12T08:32:50.253Z	  ```
+2025-11-12T08:32:50.256Z	  {
+2025-11-12T08:32:50.256Z	    "name": "worker-name",
+2025-11-12T08:32:50.256Z	    "compatibility_date": "2025-11-12",
+2025-11-12T08:32:50.256Z	    "assets": {
+2025-11-12T08:32:50.256Z	      "directory": "./dist"
+2025-11-12T08:32:50.256Z	    }
+2025-11-12T08:32:50.256Z	  }
+2025-11-12T08:32:50.256Z	  ```
+2025-11-12T08:32:50.256Z	  
+2025-11-12T08:32:50.256Z	
+2025-11-12T08:32:50.256Z	
+2025-11-12T08:32:50.272Z	
+2025-11-12T08:32:50.272Z	Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
+2025-11-12T08:32:50.293Z	🪵  Logs were written to "/opt/buildhome/.config/.wrangler/logs/wrangler-2025-11-12_08-32-49_576.log"
+2025-11-12T08:32:50.425Z	Failed: error occurred while running deploy command
