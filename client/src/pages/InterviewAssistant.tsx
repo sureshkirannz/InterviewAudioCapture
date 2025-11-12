@@ -122,7 +122,8 @@ export default function InterviewAssistant() {
 
           {!isActive && (
             <p className="text-sm text-muted-foreground text-center max-w-md">
-              Click "Start Listening" and select your screen with "Share system audio" enabled.
+              Click "Start Listening" to begin transcribing audio from your microphone.
+              Turn up your speakers so the microphone can pick up the interviewer's voice.
               Questions will be automatically detected and sent to your webhook.
             </p>
           )}

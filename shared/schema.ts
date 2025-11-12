@@ -41,10 +41,6 @@ export interface WebhookPayload {
 // Settings
 export interface AppSettings {
   webhookUrl: string;
-  silenceThreshold: number;
-  silenceDuration: number;
-  minSpeechDuration: number;
-  maxRecordingDuration: number;
 }
 
 // Question detection keywords (from Python script)
@@ -67,8 +63,4 @@ export const QUESTION_KEYWORDS = [
 // Default settings
 export const DEFAULT_SETTINGS: AppSettings = {
   webhookUrl: "https://n8n.smartbytesolutions.co.nz/webhook/interview-audio",
-  silenceThreshold: 300,
-  silenceDuration: 1.5,
-  minSpeechDuration: 1.5,
-  maxRecordingDuration: 30,
 };

@@ -50,7 +50,7 @@ export function SettingsDialog({ settings, onSave, disabled }: SettingsDialogPro
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>
           <DialogDescription>
-            Configure webhook URL and audio detection parameters
+            Configure webhook URL for question notifications
           </DialogDescription>
         </DialogHeader>
         
@@ -61,49 +61,14 @@ export function SettingsDialog({ settings, onSave, disabled }: SettingsDialogPro
               id="webhook-url"
               value={localSettings.webhookUrl}
               onChange={(e) =>
-                setLocalSettings({ ...localSettings, webhookUrl: e.target.value })
+                setLocalSettings({ webhookUrl: e.target.value })
               }
               placeholder="https://your-webhook-url.com"
               data-testid="input-webhook-url"
             />
             <p className="text-xs text-muted-foreground">
-              Questions will be sent to this URL in JSON format
+              Detected questions will be sent to this URL in JSON format with timestamp, question number, text, and word count.
             </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="min-speech">Min Speech (seconds)</Label>
-              <Input
-                id="min-speech"
-                type="number"
-                step="0.1"
-                value={localSettings.minSpeechDuration}
-                onChange={(e) =>
-                  setLocalSettings({
-                    ...localSettings,
-                    minSpeechDuration: parseFloat(e.target.value),
-                  })
-                }
-                data-testid="input-min-speech"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="max-recording">Max Recording (seconds)</Label>
-              <Input
-                id="max-recording"
-                type="number"
-                value={localSettings.maxRecordingDuration}
-                onChange={(e) =>
-                  setLocalSettings({
-                    ...localSettings,
-                    maxRecordingDuration: parseInt(e.target.value),
-                  })
-                }
-                data-testid="input-max-recording"
-              />
-            </div>
           </div>
         </div>
 
