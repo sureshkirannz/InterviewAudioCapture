@@ -1,7 +1,18 @@
 name = "interview-assistant"
-main = "dist/cloudflare.js"
+main = "server/cloudflare.ts"
 compatibility_date = "2025-11-12"
 compatibility_flags = ["nodejs_compat"]
 
+# Rules for bundling
+[build.upload]
+format = "modules"
+main = "./server/cloudflare.ts"
+
 [site]
 bucket = "./dist/public"
+
+# Node.js compatibility rules
+[[rules]]
+type = "CompiledWasm"
+globs = ["**/*.wasm"]
+fallthrough = true

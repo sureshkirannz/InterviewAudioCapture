@@ -1,59 +1,69 @@
 // @ts-ignore - cloudflare:node is available in Workers runtime
 import { httpServerHandler } from 'cloudflare:node';
-import express, { type Request, Response, NextFunction } from "express";
+import { createServer } from 'node:http';
 
-const app = express();
+// Simple HTTP server without Express or body-parser
+const server = createServer((req, res) => {
+  const start = Date.now();
+  const url = new URL(req.url || '/', `http://${req.headers.host}`);
+  
+  // Log on finish
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    console.log(`${req.method} ${url.pathname} ${res.statusCode} ${duration}ms`);
+  });
 
-// Custom body parser that doesn't use body-parser package
-app.use((req: Request, res: Response, next: NextFunction) => {
+  // Health check endpoint
+  if (url.pathname === '/api/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ 
+      status: 'ok', 
+      timestamp: new Date().toISOString() 
+    }));
+    return;
+  }
+
+  // Root endpoint
+  if (url.pathname === '/' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end('<h1>Interview Assistant - Cloudflare Workers</h1><p>Server is running!</p>');
+    return;
+  }
+
+  // Handle POST/PUT/PATCH with JSON body
   if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
-    let data = '';
+    let body = '';
     
     req.on('data', (chunk) => {
-      data += chunk.toString();
+      body += chunk.toString();
     });
     
     req.on('end', () => {
-      if (data && req.headers['content-type']?.includes('application/json')) {
+      if (req.headers['content-type']?.includes('application/json')) {
         try {
-          req.body = JSON.parse(data);
+          const data = JSON.parse(body);
+          // You can add your API routes here
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ message: 'Request received', data }));
         } catch (e) {
-          req.body = {};
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ message: 'Invalid JSON' }));
         }
       } else {
-        req.body = data || {};
+        res.writeHead(415, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'Unsupported Media Type' }));
       }
-      next();
     });
-  } else {
-    next();
+    
+    return;
   }
+
+  // 404 for everything else
+  res.writeHead(404, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ message: 'Not Found', path: url.pathname }));
 });
 
-// Simple logging
-app.use((req: Request, res: Response, next: NextFunction) => {
-  const start = Date.now();
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    console.log(`${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
-  });
-  next();
-});
+server.listen(3000);
 
-// Routes
-app.get("/", (_req: Request, res: Response) => {
-  res.send("Interview Assistant - Cloudflare Workers");
-});
-
-app.get("/api/health", (_req: Request, res: Response) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
-});
-
-// Error handler
-app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-  const status = err.status || err.statusCode || 500;
-  const message = err.message || "Internal Server Error";
-  res.status(status).json({ message });
-});
-
-export default httpServerHandler(app);
+// Export using httpServerHandler for Cloudflare Workers
+export default httpServerHandler({ port: 3000 });
