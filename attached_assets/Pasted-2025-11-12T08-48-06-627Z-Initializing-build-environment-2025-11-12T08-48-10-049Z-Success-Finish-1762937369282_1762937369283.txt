@@ -1,0 +1,87 @@
+2025-11-12T08:48:06.627Z	Initializing build environment...
+2025-11-12T08:48:10.049Z	Success: Finished initializing build environment
+2025-11-12T08:48:10.347Z	Cloning repository...
+2025-11-12T08:48:12.075Z	Detected the following tools from environment: npm@10.9.2, nodejs@22.16.0
+2025-11-12T08:48:12.076Z	Restoring from dependencies cache
+2025-11-12T08:48:12.078Z	Restoring from build output cache
+2025-11-12T08:48:12.356Z	Installing project dependencies: npm clean-install --progress=false
+2025-11-12T08:48:18.851Z	npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+2025-11-12T08:48:18.864Z	npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+2025-11-12T08:48:24.209Z	
+2025-11-12T08:48:24.209Z	added 478 packages, and audited 479 packages in 11s
+2025-11-12T08:48:24.210Z	
+2025-11-12T08:48:24.210Z	64 packages are looking for funding
+2025-11-12T08:48:24.210Z	  run `npm fund` for details
+2025-11-12T08:48:24.230Z	
+2025-11-12T08:48:24.230Z	8 vulnerabilities (3 low, 5 moderate)
+2025-11-12T08:48:24.230Z	
+2025-11-12T08:48:24.230Z	To address issues that do not require attention, run:
+2025-11-12T08:48:24.230Z	  npm audit fix
+2025-11-12T08:48:24.231Z	
+2025-11-12T08:48:24.231Z	To address all issues (including breaking changes), run:
+2025-11-12T08:48:24.231Z	  npm audit fix --force
+2025-11-12T08:48:24.231Z	
+2025-11-12T08:48:24.231Z	Run `npm audit` for details.
+2025-11-12T08:48:25.177Z	Executing user build command: npm run build
+2025-11-12T08:48:25.392Z	
+2025-11-12T08:48:25.392Z	> rest-express@1.0.0 build
+2025-11-12T08:48:25.393Z	> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+2025-11-12T08:48:25.393Z	
+2025-11-12T08:48:25.652Z	vite v5.4.20 building for production...
+2025-11-12T08:48:25.704Z	transforming...
+2025-11-12T08:48:26.727Z	
+2025-11-12T08:48:26.727Z	A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+2025-11-12T08:48:29.620Z	✓ 1717 modules transformed.
+2025-11-12T08:48:29.961Z	rendering chunks...
+2025-11-12T08:48:29.970Z	computing gzip size...
+2025-11-12T08:48:30.004Z	../dist/public/index.html                   0.94 kB │ gzip:   0.50 kB
+2025-11-12T08:48:30.004Z	../dist/public/assets/index-Dih3bo2M.css   69.52 kB │ gzip:  11.28 kB
+2025-11-12T08:48:30.004Z	../dist/public/assets/index-Bqos7blX.js   366.29 kB │ gzip: 114.04 kB
+2025-11-12T08:48:30.004Z	✓ built in 4.33s
+2025-11-12T08:48:30.050Z	
+2025-11-12T08:48:30.050Z	  dist/index.js  4.7kb
+2025-11-12T08:48:30.050Z	
+2025-11-12T08:48:30.050Z	⚡ Done in 4ms
+2025-11-12T08:48:30.079Z	Success: Build command completed
+2025-11-12T08:48:30.185Z	Executing user deploy command: npx wrangler deploy
+2025-11-12T08:48:34.004Z	npm warn exec The following package was not found and will be installed: wrangler@4.47.0
+2025-11-12T08:48:56.810Z	
+2025-11-12T08:48:56.811Z	 ⛅️ wrangler 4.47.0
+2025-11-12T08:48:56.811Z	───────────────────
+2025-11-12T08:48:56.938Z	▲ [WARNING] Failed to match Worker name. Your config file is using the Worker name "interview-assistant", but the CI system expected "interviewaudio". Overriding using the CI provided Worker name. Workers Builds connected builds will attempt to open a pull request to resolve this config name mismatch.
+2025-11-12T08:48:56.938Z	
+2025-11-12T08:48:56.939Z	
+2025-11-12T08:48:58.008Z	Fetching list of already uploaded assets...
+2025-11-12T08:48:58.390Z	Building list of assets to upload...
+2025-11-12T08:48:58.396Z	 = assets/index-Bqos7blX.193802c8aa.js (already uploaded assets/index-Bqos7blX.js)
+2025-11-12T08:48:58.397Z	 = assets/index-Dih3bo2M.eb1a27bddb.css (already uploaded assets/index-Dih3bo2M.css)
+2025-11-12T08:48:58.399Z	 = favicon.b61c07068c.png (already uploaded favicon.png)
+2025-11-12T08:48:58.400Z	 = index.471c7fcd6a.html (already uploaded index.html)
+2025-11-12T08:49:03.124Z	Skipped uploading 4 existing assets.
+2025-11-12T08:49:03.124Z	↗️  Done syncing assets
+2025-11-12T08:49:03.124Z	Total Upload: 1207.91 KiB / gzip: 310.84 KiB
+2025-11-12T08:49:16.338Z	
+2025-11-12T08:49:16.340Z	✘ [ERROR] A request to the Cloudflare API (/accounts/fe92eeff181662396aefb25fc1d81fdf/workers/scripts/interviewaudio/versions) failed.
+2025-11-12T08:49:16.342Z	
+2025-11-12T08:49:16.342Z	  Uncaught TypeError: require_streams(...) is not a function
+2025-11-12T08:49:16.342Z	    at null.<anonymous> (file:///opt/buildhome/repo/node_modules/iconv-lite/lib/index.js:144:9) in node_modules/iconv-lite/lib/index.js
+2025-11-12T08:49:16.342Z	    at null.<anonymous> (cloudflare.js:18:50) in __require2
+2025-11-12T08:49:16.343Z	    at null.<anonymous> (file:///opt/buildhome/repo/node_modules/raw-body/index.js:18:13) in node_modules/raw-body/index.js
+2025-11-12T08:49:16.343Z	    at null.<anonymous> (cloudflare.js:18:50) in __require2
+2025-11-12T08:49:16.343Z	    at null.<anonymous> (file:///opt/buildhome/repo/node_modules/body-parser/lib/read.js:16:15) in node_modules/body-parser/lib/read.js
+2025-11-12T08:49:16.343Z	    at null.<anonymous> (cloudflare.js:18:50) in __require2
+2025-11-12T08:49:16.344Z	    at null.<anonymous> (file:///opt/buildhome/repo/node_modules/body-parser/lib/types/json.js:19:12) in node_modules/body-parser/lib/types/json.js
+2025-11-12T08:49:16.344Z	    at null.<anonymous> (cloudflare.js:18:50) in __require2
+2025-11-12T08:49:16.348Z	    at null.<anonymous> (file:///opt/buildhome/repo/node_modules/body-parser/index.js:141:16) in loadParser
+2025-11-12T08:49:16.348Z	    at null.<anonymous> (file:///opt/buildhome/repo/node_modules/body-parser/index.js:122:12) in get
+2025-11-12T08:49:16.348Z	   [code: 10021]
+2025-11-12T08:49:16.348Z	  To learn more about this error, visit: https://developers.cloudflare.com/workers/observability/errors/#validation-errors-10021
+2025-11-12T08:49:16.348Z	
+2025-11-12T08:49:16.349Z	  
+2025-11-12T08:49:16.349Z	  If you think this is a bug, please open an issue at: https://github.com/cloudflare/workers-sdk/issues/new/choose
+2025-11-12T08:49:16.349Z	
+2025-11-12T08:49:16.349Z	
+2025-11-12T08:49:16.349Z	
+2025-11-12T08:49:16.349Z	Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
+2025-11-12T08:49:16.372Z	🪵  Logs were written to "/opt/buildhome/.config/.wrangler/logs/wrangler-2025-11-12_08-48-56_020.log"
+2025-11-12T08:49:17.829Z	Failed: error occurred while running deploy command
