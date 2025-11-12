@@ -1,0 +1,436 @@
+#!/usr/bin/env python3
+"""
+Interview Assistant - Simple Version
+No Whisper required, uses Google Speech Recognition only
+"""
+
+import pyaudio
+import wave
+import requests
+import threading
+import queue
+import time
+import numpy as np
+from datetime import datetime
+import tempfile
+import os
+import sys
+import json
+import speech_recognition as sr
+
+class SimpleInterviewAssistant:
+    def __init__(self, webhook_url="https://n8n.smartbytesolutions.co.nz/webhook/interview-audio"):
+        self.webhook_url = webhook_url
+        self.audio_queue = queue.Queue()
+        self.is_running = False
+        
+        # Audio settings
+        self.CHUNK = 1024 * 4
+        self.FORMAT = pyaudio.paInt16
+        self.CHANNELS = 1
+        self.RATE = 16000  # 16kHz for better speech recognition
+        
+        # Detection settings
+        self.silence_threshold = 300  # Adjust based on your environment
+        self.silence_duration = 1.5  # Seconds of silence to end recording
+        self.min_speech_duration = 1.5  # Minimum seconds to consider
+        self.max_recording_duration = 30  # Maximum recording length
+        
+        # Initialize
+        self.audio = pyaudio.PyAudio()
+        self.recognizer = sr.Recognizer()
+        self.recognizer.energy_threshold = 300  # Adjust for ambient noise
+        self.recognizer.dynamic_energy_threshold = True
+        
+        # Recording state
+        self.current_recording = []
+        self.is_recording = False
+        self.silence_counter = 0
+        
+        # Statistics
+        self.questions_detected = 0
+        self.total_transcriptions = 0
+        
+        # Question keywords (simplified but effective)
+        self.question_keywords = [
+            # Question words
+            'what', 'when', 'where', 'why', 'how', 'who', 'which', 'whose',
+            # Modal questions
+            'can you', 'could you', 'would you', 'will you', 'should',
+            'do you', 'did you', 'have you', 'are you', 'were you',
+            # Interview specific
+            'tell me', 'describe', 'explain', 'share', 'discuss',
+            'walk me through', 'talk about', 'give me an example',
+            'your experience', 'your approach', 'your opinion',
+            'your strengths', 'your weakness', 'time when',
+            'situation where', 'challenge', 'achievement',
+            # Ending with ?
+            '?'
+        ]
+    
+    def find_audio_device(self):
+        """Simple device selection"""
+        print("\n" + "="*60)
+        print("🎤 AUDIO DEVICE SELECTION")
+        print("="*60)
+        
+        devices = []
+        for i in range(self.audio.get_device_count()):
+            try:
+                info = self.audio.get_device_info_by_index(i)
+                if info['maxInputChannels'] > 0:
+                    devices.append((i, info['name']))
+                    print(f"{len(devices):2d}. {info['name']}")
+            except:
+                continue
+        
+        if not devices:
+            print("❌ No audio devices found!")
+            return None
+        
+        print("\n💡 Tips:")
+        print("  - For Zoom/Teams: Choose 'Stereo Mix' or 'VB-Cable'")
+        print("  - For in-person: Choose your microphone")
+        
+        while True:
+            choice = input(f"\nSelect device (1-{len(devices)}): ").strip()
+            if choice.isdigit() and 1 <= int(choice) <= len(devices):
+                idx = devices[int(choice)-1][0]
+                name = devices[int(choice)-1][1]
+                print(f"\n✅ Selected: {name}")
+                return idx
+            print("Invalid choice, try again")
+    
+    def is_question(self, text):
+        """Simple but effective question detection"""
+        if not text or len(text) < 10:
+            return False
+        
+        text_lower = text.lower().strip()
+        
+        # Check for question keywords
+        for keyword in self.question_keywords:
+            if keyword in text_lower:
+                return True
+        
+        return False
+    
+    def transcribe_audio(self, audio_data):
+        """Transcribe using Google Speech Recognition"""
+        temp_file = None
+        try:
+            # Save to temporary WAV file
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+                temp_file = tmp.name
+                wf = wave.open(tmp.name, "wb")
+                wf.setnchannels(self.CHANNELS)
+                wf.setsampwidth(self.audio.get_sample_size(self.FORMAT))
+                wf.setframerate(self.RATE)
+                wf.writeframes(b"".join(audio_data))
+                wf.close()
+            
+            # Transcribe
+            with sr.AudioFile(temp_file) as source:
+                audio = self.recognizer.record(source)
+                
+                try:
+                    # Try Google (usually most accurate)
+                    text = self.recognizer.recognize_google(audio)
+                    return text
+                except sr.UnknownValueError:
+                    print("   ⚠️ Could not understand audio")
+                    return None
+                except sr.RequestError as e:
+                    print(f"   ❌ Google API error: {e}")
+                    
+                    # Fallback to Sphinx (offline)
+                    try:
+                        text = self.recognizer.recognize_sphinx(audio)
+                        return text
+                    except:
+                        return None
+                        
+        except Exception as e:
+            print(f"   ❌ Transcription error: {e}")
+            return None
+        finally:
+            if temp_file and os.path.exists(temp_file):
+                try:
+                    os.unlink(temp_file)
+                except:
+                    pass
+    
+    def capture_audio(self):
+        """Capture audio with volume visualization"""
+        try:
+            stream = self.audio.open(
+                format=self.FORMAT,
+                channels=self.CHANNELS,
+                rate=self.RATE,
+                input=True,
+                input_device_index=self.device_index,
+                frames_per_buffer=self.CHUNK
+            )
+            
+            print("\n🎧 Listening for questions...")
+            print("="*60)
+            
+            chunks_per_second = int(self.RATE / self.CHUNK)
+            silence_chunks = int(self.silence_duration * chunks_per_second)
+            
+            while self.is_running:
+                try:
+                    data = stream.read(self.CHUNK, exception_on_overflow=False)
+                    audio_array = np.frombuffer(data, dtype=np.int16)
+                    volume = np.abs(audio_array).mean()
+                    
+                    # Visual feedback
+                    bar_length = min(int(volume / 100), 40)
+                    if self.is_recording:
+                        bar = "🔴" + "█" * bar_length + "░" * (40 - bar_length)
+                        status = "RECORDING"
+                    else:
+                        bar = "⚪" + "▪" * bar_length + "·" * (40 - bar_length)
+                        status = "LISTENING"
+                    
+                    print(f"\r{status} {bar} Vol:{int(volume):4}", end="")
+                    
+                    # Speech detection
+                    if volume > self.silence_threshold:
+                        if not self.is_recording:
+                            self.is_recording = True
+                            self.current_recording = []
+                            print(f"\n📍 Started recording at {datetime.now().strftime('%H:%M:%S')}")
+                        
+                        self.current_recording.append(data)
+                        self.silence_counter = 0
+                        
+                    elif self.is_recording:
+                        self.current_recording.append(data)
+                        self.silence_counter += 1
+                        
+                        if self.silence_counter >= silence_chunks:
+                            duration = len(self.current_recording) / chunks_per_second
+                            
+                            if duration >= self.min_speech_duration:
+                                print(f"\n⏹️ Stopped ({duration:.1f}s) - Processing...")
+                                self.audio_queue.put(self.current_recording.copy())
+                            else:
+                                print(f"\n⏩ Too short ({duration:.1f}s)")
+                            
+                            self.is_recording = False
+                            self.current_recording = []
+                            self.silence_counter = 0
+                    
+                    # Max duration check
+                    if self.is_recording and len(self.current_recording) / chunks_per_second >= self.max_recording_duration:
+                        print(f"\n⏱️ Max duration reached - Processing...")
+                        self.audio_queue.put(self.current_recording.copy())
+                        self.is_recording = False
+                        self.current_recording = []
+                        self.silence_counter = 0
+                        
+                except Exception as e:
+                    print(f"\n❌ Capture error: {e}")
+            
+            stream.stop_stream()
+            stream.close()
+            
+        except Exception as e:
+            print(f"❌ Audio stream error: {e}")
+    
+    def process_audio(self):
+        """Process captured audio"""
+        while self.is_running:
+            try:
+                if not self.audio_queue.empty():
+                    audio_data = self.audio_queue.get(timeout=1)
+                    
+                    print("   🔄 Transcribing...")
+                    text = self.transcribe_audio(audio_data)
+                    
+                    if text:
+                        self.total_transcriptions += 1
+                        
+                        if self.is_question(text):
+                            self.questions_detected += 1
+                            print(f"\n❓ Question #{self.questions_detected}:")
+                            print(f"   \"{text}\"")
+                            
+                            self.send_to_webhook(text)
+                        else:
+                            print(f"   💬 Statement: \"{text[:80]}...\"")
+                    
+                    print("-"*60)
+                    
+                else:
+                    time.sleep(0.1)
+                    
+            except queue.Empty:
+                continue
+            except Exception as e:
+                print(f"❌ Processing error: {e}")
+    
+    def send_to_webhook(self, text):
+        """Send question to webhook"""
+        try:
+            payload = {
+                "timestamp": datetime.now().isoformat(),
+                "question_number": self.questions_detected,
+                "type": "interview_question",
+                "text": text,
+                "word_count": len(text.split())
+            }
+            
+            response = requests.post(
+                self.webhook_url,
+                json=payload,
+                headers={'Content-Type': 'application/json'},
+                timeout=5
+            )
+            
+            if response.status_code == 200:
+                print("   ✅ Sent to webhook")
+            else:
+                print(f"   ⚠️ Webhook returned {response.status_code}")
+                
+        except Exception as e:
+            print(f"   ❌ Webhook error: {e}")
+    
+    def test_device(self):
+        """Quick device test"""
+        try:
+            print("\n🎤 Testing audio for 3 seconds...")
+            print("   Speak to test the microphone")
+            
+            stream = self.audio.open(
+                format=self.FORMAT,
+                channels=self.CHANNELS,
+                rate=self.RATE,
+                input=True,
+                input_device_index=self.device_index,
+                frames_per_buffer=self.CHUNK
+            )
+            
+            max_vol = 0
+            for i in range(int(self.RATE / self.CHUNK * 3)):
+                data = stream.read(self.CHUNK, exception_on_overflow=False)
+                audio_array = np.frombuffer(data, dtype=np.int16)
+                volume = np.abs(audio_array).mean()
+                max_vol = max(max_vol, volume)
+                
+                bar = "█" * min(int(volume / 100), 50)
+                print(f"\r   {bar:<50} {int(volume):4}", end="")
+            
+            stream.stop_stream()
+            stream.close()
+            
+            print(f"\n   Peak volume: {int(max_vol)}")
+            
+            if max_vol < 100:
+                print("   ⚠️ Low audio detected - check your microphone/audio")
+                return False
+            else:
+                print("   ✅ Audio levels OK")
+                return True
+                
+        except Exception as e:
+            print(f"❌ Test failed: {e}")
+            return False
+    
+    def start(self):
+        """Start the assistant"""
+        print("\n" + "="*60)
+        print("🚀 SIMPLE INTERVIEW ASSISTANT")
+        print("="*60)
+        
+        # Select device
+        self.device_index = self.find_audio_device()
+        if self.device_index is None:
+            return
+        
+        # Test device
+        if not self.test_device():
+            if input("\nContinue anyway? (y/n): ").lower() != 'y':
+                return
+        
+        self.is_running = True
+        
+        # Start threads
+        capture_thread = threading.Thread(target=self.capture_audio, daemon=True)
+        process_thread = threading.Thread(target=self.process_audio, daemon=True)
+        
+        capture_thread.start()
+        process_thread.start()
+        
+        print("\n✅ Assistant active!")
+        print("Press Ctrl+C to stop\n")
+        
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            self.stop()
+    
+    def stop(self):
+        """Stop the assistant"""
+        print("\n\n🛑 Stopping...")
+        self.is_running = False
+        time.sleep(1)
+        self.audio.terminate()
+        
+        print(f"\n📊 Session Summary:")
+        print(f"   Total transcriptions: {self.total_transcriptions}")
+        print(f"   Questions detected: {self.questions_detected}")
+        print("\n✅ Stopped")
+
+def check_requirements():
+    """Check minimal requirements"""
+    missing = []
+    
+    required = {
+        'pyaudio': 'pyaudio',
+        'numpy': 'numpy', 
+        'requests': 'requests',
+        'speech_recognition': 'SpeechRecognition'
+    }
+    
+    print("Checking requirements...")
+    for module, package in required.items():
+        try:
+            __import__(module)
+        except ImportError:
+            missing.append(package)
+    
+    if missing:
+        print(f"\n❌ Missing: {', '.join(missing)}")
+        print(f"\nInstall with:")
+        print(f"  pip install {' '.join(missing)}")
+        
+        if 'pyaudio' in missing:
+            print("\nFor Windows:")
+            print("  pip install pipwin")
+            print("  pipwin install pyaudio")
+        
+        sys.exit(1)
+    
+    print("✅ Requirements OK\n")
+
+def main():
+    check_requirements()
+    
+    print("="*60)
+    print("SIMPLE INTERVIEW ASSISTANT")
+    print("="*60)
+    
+    print("\nWebhook URL:")
+    print("Default: https://n8n.smartbytesolutions.co.nz/webhook/interview-audio")
+    custom = input("Press Enter for default or enter custom URL: ").strip()
+    
+    webhook_url = custom if custom else "https://n8n.smartbytesolutions.co.nz/webhook/interview-audio"
+    
+    assistant = SimpleInterviewAssistant(webhook_url)
+    assistant.start()
+
+if __name__ == "__main__":
+    main()
