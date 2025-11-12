@@ -1,4 +1,4 @@
-name = "interview-assistant"
+name = "interviewaudio"
 main = "server/cloudflare.ts"
 compatibility_date = "2025-11-12"
 compatibility_flags = ["nodejs_compat"]
